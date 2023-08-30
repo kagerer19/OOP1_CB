@@ -1,11 +1,11 @@
 package DoublyLinkedList;
 
-public class Node {
-    int data;
-    Node previous;
-    Node next;
+public class Node<T> {
+    T data;
+    Node<T> previous;
+    Node<T> next;
 
-    public Node(int data) {
+    public Node(T data) {
         this.data = data;
         this.previous = null;
         this.next = null;

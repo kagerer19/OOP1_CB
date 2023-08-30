@@ -1,124 +1,96 @@
 package DoublyLinkedList;
 
-public class DoubleLinkedList {
-    Node head;
-    Node tail;
+public class DoubleLinkedList<T> {
+    private Node<T> head;
+    private Node<T> tail;
+    private int size;
 
     public DoubleLinkedList() {
         this.head = null;
         this.tail = null;
+        this.size = 0;
     }
 
-    public void add(int data) {
-        Node temp = new Node(data);
-
+    public void add(T data) {
+        Node<T> newNode = new Node<>(data);
         if (head == null) {
-            head = temp;
-            tail = temp;
+            head = newNode;
+            tail = newNode;
         } else {
-            temp.next = head;
-            head.previous = temp;
-            head = temp;
+            tail.next = newNode;
+            newNode.previous = tail;
+            tail = newNode;
         }
+        size++;
     }
 
-    public void add(int data, int pos) {
-        Node temp = new Node(data);
-
-        if (pos == 1) {
-            add(data);
-        } else {
-            Node current = head;
-            int currentPosition = 1;
-            while (current != null && currentPosition < pos) {
-                current = current.next;
-                currentPosition++;
-            }
-
-            if (current == null) {
-                add(data);
-            } else {
-                temp.next = current;
-                temp.previous = current.previous;
-                current.previous.next = temp;
-                current.previous = temp;
-            }
-        }
-    }
-
-    public int size() {
-        Node temp = head;
-        int counter = 0;
-
-        while (temp != null) {
-            counter++;
-            temp = temp.next;
-        }
-        return counter;
-    }
-
-    public int get(DoubleLinkedList dList, int index) {
-        int size = dList.size();
-        int midIndex = size / 2;
-
-        if (index < 0 || index > size) {
+    public void add(T data, int pos) {
+        if (pos < 0 || pos > size) {
             throw new IndexOutOfBoundsException("Index out of range");
-        } else if (index == head.data) {
-            return head.data;
-        } else if (index == size - 1) {
-            return tail.data;
         }
 
-        Node current = null;
-
-        if (index <= midIndex) {
-            //Start from the halfway point and traverse forward
-            for (int i = 0; i <= size; i++) {
-                current = head;
+        if (pos == size) {
+            add(data);
+        } else if (pos == 0) {
+            Node<T> newNode = new Node<>(data);
+            newNode.next = head;
+            head.previous = newNode;
+            head = newNode;
+            size++;
+        } else {
+            Node<T> newNode = new Node<>(data);
+            Node<T> current = head;
+            for (int i = 0; i < pos - 1; i++) {
                 current = current.next;
             }
-        } else {
-            //Start from the halfway point and traverse backwards
-            current = tail;
-            for (int i = size - 1; i > index; i--) {
-                current = current.previous;
-            }
+            newNode.next = current.next;
+            current.next.previous = newNode;
+            newNode.previous = current;
+            current.next = newNode;
+            size++;
+        }
+    }
+
+    public T get(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index out of range");
+        }
+
+        Node<T> current = head;
+        for (int i = 0; i < index; i++) {
+            current = current.next;
         }
         return current.data;
     }
 
     public void remove(int index) {
-        //free the memory allocated to the node to be deleted
-        Node temp = head;
-
-        for (int i = 0; i < index && temp != null; i++) {
-            temp = temp.next;
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index out of range");
         }
 
-        //if list is empty, return *
-        if (head == null) {
-            return;
+        if (index == 0) {
+            head = head.next;
+            if (head != null) {
+                head.previous = null;
+            } else {
+                tail = null;
+            }
+        } else if (index == size - 1) {
+            tail = tail.previous;
+            tail.next = null;
+        } else {
+            Node<T> current = head;
+            for (int i = 0; i < index; i++) {
+                current = current.next;
+            }
+            current.previous.next = current.next;
+            current.next.previous = current.previous;
         }
+        size--;
+    }
 
-        //if node to be deleted is the head node, then update the head node and point to the next node *
-        if (temp == head) {
-            head = temp.next;
-        }
-
-        //if the node to be deleted is the tail node then update the tail node to point to the previous node *
-        if (temp == tail) {
-            tail = temp.previous;
-        }
-
-        //if the node to be deleted is not the head or the tail node then update the previous nodes next pointer to the next node and update the
-        // node nodes previous pointer to point to the previous node
-        if (temp.previous != null) {
-            temp.previous.next = temp.next;
-        }
-
-        if (temp.next != null) {
-            temp.next.previous = temp.previous;
-        }
+    public int size() {
+        return size;
     }
 
     @Override
@@ -156,28 +128,6 @@ public class DoubleLinkedList {
                 current = current.previous;
             }
         }
-
         return result.toString();
-    }
-
-    public static void main(String[] args) {
-        DoubleLinkedList dList = new DoubleLinkedList();
-
-        dList.add(1);
-        dList.add(2);
-        dList.add(3);
-        dList.add(4);
-        dList.add(5);
-        dList.add(5);
-
-        System.out.println("\n" + "The list has " + dList.size() + " items");
-        System.out.println("The value at this index is: " + dList.get(dList, 4));
-
-
-        System.out.println("Print list");
-        System.out.println(dList);
-
-        System.out.println("-Reverse list-");
-        System.out.println(dList.toStringReverse());
     }
 }
