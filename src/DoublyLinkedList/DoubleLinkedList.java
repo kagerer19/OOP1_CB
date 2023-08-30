@@ -36,7 +36,6 @@ public class DoubleLinkedList<T> {
             newNode.next = head;
             head.previous = newNode;
             head = newNode;
-            size++;
         } else {
             Node<T> newNode = new Node<>(data);
             Node<T> current = head;
@@ -47,8 +46,8 @@ public class DoubleLinkedList<T> {
             current.next.previous = newNode;
             newNode.previous = current;
             current.next = newNode;
-            size++;
         }
+        size++;
     }
 
     public T get(int index) {
